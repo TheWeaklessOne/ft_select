@@ -9,10 +9,11 @@ SRC  =	Sources/data_structures.c		\
 		Sources/init.c					\
 		Sources/input.c					\
 		Sources/escape.c				\
+		Sources/signals.c				\
 
 OBJ  = $(SRC:.c=.o)
 
-FLAGS = -g
+FLAGS = -Wall -Wextra -Werror
 
 RED= \033[1;31m
 GREEN= \033[1;32m
@@ -25,7 +26,6 @@ all: $(NAME)
 
 $(NAME): $(OBJ)
 	gcc $(FLAGS) $(OBJ) -o $(NAME) -ltermcap
-	rm -rf $(OBJ)
 	@echo "$(GREEN)Project is successfully compiled$(RESET)"
 
 %.o : %.c
@@ -37,8 +37,8 @@ clean:
 
 fclean: clean
 	@echo "$(RED)Suspending project files$(VIOLET)"
-	rm -rf $(OBJ)
 	rm -rf $(NAME)
+	rm -rf $(OBJ)
 	@echo "$(RED)All files is deleted$(RESET)"
 
 re: fclean all

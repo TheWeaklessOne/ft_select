@@ -78,7 +78,7 @@ int					ft_strcmp(const char *s11, const char *s22)
 
 int					ft_strlen(const char *src)
 {
-	int				i;
+	register int	i;
 
 	i = 0;
 	while (src[i])

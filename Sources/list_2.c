@@ -19,8 +19,8 @@ int				list_length(t_list *lst)
 	ret = 0;
 	while (lst)
 	{
-		lst = lst->next;
 		ret++;
+		lst = lst->next;
 	}
 	return (ret);
 }
@@ -101,9 +101,10 @@ t_list			*list_at(t_list *lst, int at)
 
 	if (!lst)
 		return (NULL);
-	if ((i = 1) && at <= 0)
+	if (at <= 0)
 		return (lst);
 	ret = lst;
+	i = 1;
 	while (lst->next && i < at)
 	{
 		lst = lst->next;

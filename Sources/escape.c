@@ -12,10 +12,10 @@
 
 #include "../Includes/ft_select.h"
 
-void			add_to_str(char **str_p, int *start, char *add)
+void				add_to_str(char **str_p, int *start, const char *add)
 {
-	int			i;
-	char 		*str;
+	register int	i;
+	char			*str;
 
 	str = *str_p;
 	i = -1;
@@ -23,12 +23,12 @@ void			add_to_str(char **str_p, int *start, char *add)
 		str[(*start)++] = add[i];
 }
 
-char 			*remove_esc(char *str)
+char				*remove_esc(char *str)
 {
-	const int	len = ft_strlen(str) - ft_strchr(str, 'm') - 6;
-	int			str_start;
-	char 		*ret;
-	int			i;
+	const int		len = ft_strlen(str) - ft_strchr(str, 'm') - 6;
+	register int	str_start;
+	char			*ret;
+	register int	i;
 
 	if (!(ret = malloc(len + 1)))
 		on_crash(MALLOC_ERR);
@@ -41,11 +41,11 @@ char 			*remove_esc(char *str)
 	return (ret);
 }
 
-char			*add_esc(char *str, char *colour, char *state, int to_free)
+char				*add_esc(char *str, char *colour, char *state, int to_free)
 {
-	char 		*ret;
-	const int	len = ft_strlen(str) + ft_strlen(state) + 11;
-	int 		i;
+	char			*ret;
+	const int		len = ft_strlen(str) + ft_strlen(state) + 11;
+	int				i;
 
 	if (!(ret = malloc(len + 1)))
 		on_crash(MALLOC_ERR);
@@ -61,7 +61,7 @@ char			*add_esc(char *str, char *colour, char *state, int to_free)
 	return (ret);
 }
 
-char 				*remake_esc(char *str, char *colour, char *state)
+char				*remake_esc(char *str, char *colour, char *state)
 {
 	if (ft_strchr(str, '\033') != -1)
 		return (add_esc(remove_esc(str), colour, state, 1));

@@ -14,7 +14,6 @@
 
 void		on_crash(int crash)
 {
-
 	if (crash == MALLOC_ERR)
 		write(2, "Malloc error\n", 13);
 	if (crash == ENV_ERR)

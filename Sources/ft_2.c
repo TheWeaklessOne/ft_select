@@ -12,55 +12,97 @@
 
 #include "../Includes/ft_select.h"
 
-void				change_pos(int side, t_select *select)
+void				on_plus_minus_key(int is_plus)
 {
-	if (side == SIDE_UP)
+	int				i;
+	t_elem			*elem;
+	t_list			*lst;
+
+	lst = g_select.elem_lst;
+	i = 0;
+	while (lst)
 	{
-		if (select->pos == 1)
-			select->pos = select->elem_count;
+		i++;
+		elem = lst->content;
+		elem->selected = is_plus;
+		if (is_plus)
+			elem->name = remake_esc(elem->name, elem->colour,
+					(i == g_select.pos) ? BOTH_STATE : REVERSE);
 		else
-			select->pos--;
-	}
-	else if (side == SIDE_DOWN)
-	{
-		if (select->pos == select->elem_count)
-			select->pos = 1;
-		else
-			select->pos++;
+			elem->name = remake_esc(elem->name, elem->colour,
+					(i == g_select.pos) ? UNDERLINE : NORMAL_STATE);
+		lst = lst->next;
 	}
 }
 
-char				*ft_list_to_str(t_list *lst)
+void				change_by_side(int side)
 {
-	char 			*ret;
-	char			*str;
-	register int	len;
-	register int	i;
-	t_list			*head;
+	if (side == SIDE_UP && g_select.rows > 1)
+		g_select.pos -= g_select.cols;
+	else if (side == SIDE_DOWN && g_select.rows > 1)
+		g_select.pos += g_select.cols;
+	else if (side == SIDE_LEFT)
+		g_select.pos += ((g_select.pos % g_select.cols) == 1) ?
+						(g_select.cols - 1) : -1;
+	else if (side == SIDE_RIGHT)
+		g_select.pos += (g_select.pos % g_select.cols) ? 1 :
+						(-g_select.cols + 1);
+}
 
-	head = lst;
-	len = 0;
-	if (!lst)
-		return (NULL);
+void				change_pos(int side)
+{
+	int				old_pos;
+
+	old_pos = g_select.pos;
+	change_by_side(side);
+	if (g_select.pos > g_select.elem_count)
+	{
+		if (side == SIDE_RIGHT && (g_select.pos = old_pos))
+			while (g_select.pos % g_select.cols != 1)
+				g_select.pos--;
+		if (side == SIDE_LEFT)
+			g_select.pos = g_select.elem_count;
+		if (side == SIDE_LEFT || side == SIDE_RIGHT)
+			return ;
+		g_select.pos = old_pos % g_select.cols;
+		if (!g_select.pos)
+			g_select.pos = g_select.cols;
+	}
+	if (g_select.pos < 1)
+	{
+		g_select.pos = old_pos + g_select.cols * g_select.rows - g_select.cols;
+		while (g_select.pos > g_select.elem_count)
+			g_select.pos -= g_select.cols;
+	}
+}
+
+void				ft_list_to_str(char str[])
+{
+	int				col_count;
+	char			*name;
+	register int	i;
+	register int	j;
+	t_list			*lst;
+
+	lst = g_select.elem_lst;
+	i = -1;
+	col_count = 0;
 	while (lst)
 	{
-		len += ft_strlen(((t_elem*)lst->content)->name) + 1;
+		j = -1;
+		name = ((t_elem*)lst->content)->name;
+		while (name[++j])
+			str[++i] = name[j];
+		col_count++;
+		j = ((t_elem*)lst->content)->escless_len;
+		if (col_count != g_select.cols)
+			while (j++ < g_select.max_len)
+				str[++i] = ' ';
+		else if (!(col_count = 0))
+			str[++i] = '\n';
 		lst = lst->next;
 	}
-	if (!(ret = malloc(len + 1)))
-		on_crash(MALLOC_ERR);
-	len = -1;
-	while (head)
-	{
-		str = ((t_elem*)head->content)->name;
-		i = -1;
-		while (str[++i])
-			ret[++len] = str[i];
-		ret[++len] = '\n';
-		head = head->next;
-	}
-	ret[len + 1] = '\0';
-	return (ret);
+	str[i] = '\0';
 }
 
 t_list				*ft_fill_elem_list(char *av[])
@@ -72,8 +114,13 @@ t_list				*ft_fill_elem_list(char *av[])
 	i = 0;
 	ret = NULL;
 	while (av[++i])
+	{
+		if (ft_strlen(av[i]) > g_select.max_len)
+			g_select.max_len = ft_strlen(av[i]);
 		ret = list_add_back(ret, init_elem(av[i]));
+	}
 	elem = (t_elem*)ret->content;
 	elem->name = remake_esc(elem->name, elem->colour, UNDERLINE);
+	g_select.max_len = (g_select.max_len / 8 + 1) * 8;
 	return (ret);
 }
