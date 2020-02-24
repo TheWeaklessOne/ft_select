@@ -6,7 +6,7 @@
 /*   By: wstygg <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/19 17:51:10 by wstygg            #+#    #+#             */
-/*   Updated: 2019/10/19 17:51:11 by wstygg           ###   ########.fr       */
+/*   Updated: 2020/02/24 21:25:33 by wstygg           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,8 +90,7 @@ void				ft_putstr_fd(char const *str, int fd, int new_str)
 {
 	if (!str)
 		return ;
-	while (*str)
-		write(fd, str++, 1);
+	write(fd, str, ft_strlen(str));
 	if (new_str)
 		write(fd, "\n", 1);
 }
